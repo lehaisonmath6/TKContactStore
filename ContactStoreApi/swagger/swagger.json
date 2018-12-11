@@ -1,0 +1,372 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Public Key-value store for trustkeys.network",
+        "description": "An awesome key-value store for mobile application that verify ECDSA digital signature with secp256k1",
+        "version": "1.0.0",
+        "termsOfService": "https://kvpublic.trustkeys.network/swagger/",
+        "contact": {
+            "email": "thanhnt@123xe.vn"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        }
+    },
+    "basePath": "/v1",
+    "paths": {
+        "/tkcontact/AddNewContact/": {
+            "post": {
+                "tags": [
+                    "tkcontact"
+                ],
+                "description": "Add new contact to storage cloud",
+                "operationId": "TKContactController.Add new contact",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "pubKey",
+                        "description": "Public key of user",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "sig",
+                        "description": "Sig on pubKey",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "message",
+                        "description": "Message for private key sign",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{string}\tstring"
+                    },
+                    "403": {
+                        "description": "\"Error\""
+                    }
+                }
+            }
+        },
+        "/tkcontact/EditContactItem/": {
+            "post": {
+                "tags": [
+                    "tkcontact"
+                ],
+                "description": "Edit person to Contact by pubKey",
+                "operationId": "TKContactController.Edit item contact",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "pubKey",
+                        "description": "true",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "sig",
+                        "description": "true",
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "true",
+                        "schema": {
+                            "$ref": "#/definitions/models.TKContactItem"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{string} string"
+                    },
+                    "403": {
+                        "description": ":pubKey not found"
+                    }
+                }
+            }
+        },
+        "/tkcontact/GetContact/": {
+            "get": {
+                "tags": [
+                    "tkcontact"
+                ],
+                "description": "find object by objectid",
+                "operationId": "TKContactController.Get all contact",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "pubKey",
+                        "description": "Public key of a user",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/models.TKContact"
+                        }
+                    },
+                    "403": {
+                        "description": ":pubKey not found"
+                    }
+                }
+            }
+        },
+        "/tkcontact/PutContactItem/": {
+            "post": {
+                "tags": [
+                    "tkcontact"
+                ],
+                "description": "Add contact item to Contact by pubKey",
+                "operationId": "TKContactController.Add Contact Item",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "pubKey",
+                        "description": "Public key of a user",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "sig",
+                        "description": "Sign message",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "true",
+                        "schema": {
+                            "$ref": "#/definitions/models.TKContactItem"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{string} string"
+                    },
+                    "403": {
+                        "description": "Error"
+                    }
+                }
+            }
+        },
+        "/tkcontact/RemoveContactItem/": {
+            "post": {
+                "tags": [
+                    "tkcontact"
+                ],
+                "description": "Remove item in Contact by pubKey",
+                "operationId": "TKContactController.Remove item in contact",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "pubKey",
+                        "description": "true",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "sig",
+                        "description": "true",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "pubKeyItem",
+                        "description": "true",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{string} string"
+                    },
+                    "403": {
+                        "description": "Error"
+                    }
+                }
+            }
+        },
+        "/tkcontact/SynContact/": {
+            "post": {
+                "tags": [
+                    "tkcontact"
+                ],
+                "description": "Synchronization contact by pubKey",
+                "operationId": "TKContactController.Syn contact",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "pubKey",
+                        "description": "true",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "sig",
+                        "description": "true",
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "true",
+                        "schema": {
+                            "$ref": "#/definitions/models.TKListPubKey"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.TKContactItem"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Not found"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.Object": {
+            "title": "Object",
+            "type": "object",
+            "properties": {
+                "ObjectId": {
+                    "type": "string"
+                },
+                "PlayerName": {
+                    "type": "string"
+                },
+                "Score": {
+                    "type": "integer",
+                    "format": "int64"
+                }
+            }
+        },
+        "models.Profile": {
+            "title": "Profile",
+            "type": "object",
+            "properties": {
+                "Address": {
+                    "type": "string"
+                },
+                "Age": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "Email": {
+                    "type": "string"
+                },
+                "Gender": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.TKContact": {
+            "title": "TKContact",
+            "type": "object",
+            "properties": {
+                "listFriends": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.TKContactItem"
+                    }
+                },
+                "pubKey": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.TKContactItem": {
+            "title": "TKContactItem",
+            "type": "object",
+            "properties": {
+                "coverPicture": {
+                    "type": "string"
+                },
+                "displayName": {
+                    "type": "string"
+                },
+                "emails": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "gender": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "phoneNumbers": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "profilePicture": {
+                    "type": "string"
+                },
+                "pubKeyHex": {
+                    "type": "string"
+                },
+                "timeAdd": {
+                    "type": "string"
+                },
+                "timeLastConversation": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.TKListPubKey": {
+            "title": "TKListPubKey",
+            "type": "object",
+            "properties": {
+                "ListPubKey": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "models.User": {
+            "title": "User",
+            "type": "object",
+            "properties": {
+                "Id": {
+                    "type": "string"
+                },
+                "Password": {
+                    "type": "string"
+                },
+                "Profile": {
+                    "$ref": "#/definitions/models.Profile"
+                },
+                "Username": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
