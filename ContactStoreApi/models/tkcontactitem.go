@@ -6,43 +6,44 @@ import (
 )
 
 type TKContactItem struct {
-	PubKeyHex            string   `json:"pubKeyHex"`
-	DisplayName          string   `json:"displayName"`
-	Emails               []string `json:"emails"`
-	PhoneNumbers         []string `json:"phoneNumbers"`
-	Gender               int32    `json:"gender"`
-	ProfilePicture       string   `json:"profilePicture"`
-	CoverPicture         string   `json:"coverPicture"`
-	TimeAdd              string   `json:"timeAdd"`
-	TimeLastConversation string   `json:"timeLastConversation"`
+	PubKeyHex    string   `json:"pubKeyHex"`
+	DisplayName  string   `json:"displayName"`
+	Emails       []string `json:"emails"`
+	PhoneNumbers []string `json:"phoneNumbers"`
+	Gender       int32    `json:"gender"`
+
+	ProfilePicture string `json:"profilePicture"`
+	CoverPicture   string `json:"coverPicture"`
+	TimeAdd        string `json:"timeAdd"`
+	BirthDay       string `json:"birthDay"`
 }
 
 func (this TKContactItem) ToThriftType() TType.TKContactItem {
 	typeTKPerson := TType.TKContactItem{
-		PubKeyHex:            TType.TKey(this.PubKeyHex),
-		DisplayName:          this.DisplayName,
-		PhoneNumbers:         this.PhoneNumbers,
-		Emails:               this.Emails,
-		Gender:               this.Gender,
-		ProfilePicture:       this.ProfilePicture,
-		CoverPicture:         this.CoverPicture,
-		TimeAdd:              this.TimeAdd,
-		TimeLastConversation: this.TimeLastConversation,
+		PubKeyHex:      TType.TKey(this.PubKeyHex),
+		DisplayName:    this.DisplayName,
+		PhoneNumbers:   this.PhoneNumbers,
+		Emails:         this.Emails,
+		Gender:         this.Gender,
+		ProfilePicture: this.ProfilePicture,
+		CoverPicture:   this.CoverPicture,
+		TimeAdd:        this.TimeAdd,
+		BirthDay:       this.BirthDay,
 	}
 	return typeTKPerson
 }
 
 func (this TKContactItem) ToThriftPointType() *TType.TKContactItem {
 	typeTKPerson := &TType.TKContactItem{
-		PubKeyHex:            TType.TKey(this.PubKeyHex),
-		DisplayName:          this.DisplayName,
-		PhoneNumbers:         this.PhoneNumbers,
-		Emails:               this.Emails,
-		Gender:               this.Gender,
-		ProfilePicture:       this.ProfilePicture,
-		CoverPicture:         this.CoverPicture,
-		TimeAdd:              this.TimeAdd,
-		TimeLastConversation: this.TimeLastConversation,
+		PubKeyHex:      TType.TKey(this.PubKeyHex),
+		DisplayName:    this.DisplayName,
+		PhoneNumbers:   this.PhoneNumbers,
+		Emails:         this.Emails,
+		Gender:         this.Gender,
+		ProfilePicture: this.ProfilePicture,
+		CoverPicture:   this.CoverPicture,
+		TimeAdd:        this.TimeAdd,
+		BirthDay:       this.BirthDay,
 	}
 	return typeTKPerson
 }
@@ -57,15 +58,15 @@ func ToListThriftPointTKContactItem(listPerson []*TKContactItem) []*TType.TKCont
 
 func ToModelPointType(this *TType.TKContactItem) *TKContactItem {
 	modelTKPerson := &TKContactItem{
-		PubKeyHex:            string(this.PubKeyHex),
-		DisplayName:          this.DisplayName,
-		PhoneNumbers:         this.PhoneNumbers,
-		Emails:               this.Emails,
-		Gender:               this.Gender,
-		ProfilePicture:       this.ProfilePicture,
-		CoverPicture:         this.CoverPicture,
-		TimeAdd:              this.TimeAdd,
-		TimeLastConversation: this.TimeLastConversation,
+		PubKeyHex:      string(this.PubKeyHex),
+		DisplayName:    this.DisplayName,
+		PhoneNumbers:   this.PhoneNumbers,
+		Emails:         this.Emails,
+		Gender:         this.Gender,
+		ProfilePicture: this.ProfilePicture,
+		CoverPicture:   this.CoverPicture,
+		TimeAdd:        this.TimeAdd,
+		BirthDay:       this.BirthDay,
 	}
 	return modelTKPerson
 }

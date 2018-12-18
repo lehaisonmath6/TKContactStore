@@ -20,37 +20,37 @@
                 "tags": [
                     "tkcontact"
                 ],
-                "description": "Add new contact to storage cloud",
-                "operationId": "TKContactController.Add new contact",
+                "description": "Add new contact to database",
+                "operationId": "TKContactController.Add New Contact",
                 "parameters": [
                     {
                         "in": "query",
                         "name": "pubKey",
-                        "description": "Public key of user",
+                        "description": "Public key of a user",
                         "required": true,
                         "type": "string"
                     },
                     {
                         "in": "query",
                         "name": "sig",
-                        "description": "Sig on pubKey",
+                        "description": "Sign message",
                         "required": true,
                         "type": "string"
                     },
                     {
                         "in": "query",
-                        "name": "message",
-                        "description": "Message for private key sign",
+                        "name": "mess",
+                        "description": "message to sign",
                         "required": true,
                         "type": "string"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "{string}\tstring"
+                        "description": "{string} string"
                     },
                     "403": {
-                        "description": "\"Error\""
+                        "description": "Error"
                     }
                 }
             }
@@ -248,41 +248,6 @@
         }
     },
     "definitions": {
-        "models.Object": {
-            "title": "Object",
-            "type": "object",
-            "properties": {
-                "ObjectId": {
-                    "type": "string"
-                },
-                "PlayerName": {
-                    "type": "string"
-                },
-                "Score": {
-                    "type": "integer",
-                    "format": "int64"
-                }
-            }
-        },
-        "models.Profile": {
-            "title": "Profile",
-            "type": "object",
-            "properties": {
-                "Address": {
-                    "type": "string"
-                },
-                "Age": {
-                    "type": "integer",
-                    "format": "int64"
-                },
-                "Email": {
-                    "type": "string"
-                },
-                "Gender": {
-                    "type": "string"
-                }
-            }
-        },
         "models.TKContact": {
             "title": "TKContact",
             "type": "object",
@@ -302,6 +267,9 @@
             "title": "TKContactItem",
             "type": "object",
             "properties": {
+                "birthDay": {
+                    "type": "string"
+                },
                 "coverPicture": {
                     "type": "string"
                 },
@@ -332,9 +300,6 @@
                 },
                 "timeAdd": {
                     "type": "string"
-                },
-                "timeLastConversation": {
-                    "type": "string"
                 }
             }
         },
@@ -342,29 +307,11 @@
             "title": "TKListPubKey",
             "type": "object",
             "properties": {
-                "ListPubKey": {
+                "listPubKey": {
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
-                }
-            }
-        },
-        "models.User": {
-            "title": "User",
-            "type": "object",
-            "properties": {
-                "Id": {
-                    "type": "string"
-                },
-                "Password": {
-                    "type": "string"
-                },
-                "Profile": {
-                    "$ref": "#/definitions/models.Profile"
-                },
-                "Username": {
-                    "type": "string"
                 }
             }
         }

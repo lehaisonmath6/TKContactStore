@@ -34,6 +34,9 @@ var (
 	BIGSETKV_HOST string
 	BIGSETKV_PORT int
 	BIGSETKV_PATH string //Zookeeper path or etcd path
+	ENABLE_SIG    int
+	SID           string
+	ETCDENDPOINT  string
 )
 
 func InitConfig() {
@@ -79,5 +82,12 @@ func InitConfig() {
 
 	BIGSETKV_HOST = AppConfig.StringDefault("host_port", "bigsetkv_host", "")
 	BIGSETKV_PORT = AppConfig.IntDefault("host_port", "bigsetkv_port", 883)
+
 	BIGSETKV_PATH = AppConfig.StringDefault("zookeeper", "bigsetkv_path", "/openstars/bigsetkv")
+
+	SID = AppConfig.StringDefault("host_port", "sid", "/openstars/bigsetkv")
+	ETCDENDPOINT = AppConfig.StringDefault("host_port", "etcdEndpoint", "127.0.0.1:0")
+
+	ENABLE_SIG = AppConfig.IntDefault("host_port", "enable_sig", 0)
+
 }

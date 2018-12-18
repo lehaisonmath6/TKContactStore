@@ -11,7 +11,7 @@ type TKContact struct {
 }
 
 type TKListPubKey struct {
-	ListPubKey []string `json:listPubKey`
+	ListPubKey []string `json:"listPubKey"`
 }
 
 func (this TKContact) ToThriftType() TType.TKContact {

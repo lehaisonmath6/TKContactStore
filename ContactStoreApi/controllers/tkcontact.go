@@ -12,23 +12,31 @@ import (
 
 var (
 	tkContactModel models.TKContactModelIf
+	enableSig      = true
 )
 
 type TKContactController struct {
 	beego.Controller
 }
 
-func SetContactModel(aModel models.TKContactModelIf) {
+func SetContactModel(aModel models.TKContactModelIf, enSig int) {
 	tkContactModel = aModel
+	if enSig > 0 {
+		fmt.Println("Enable sign")
+		enableSig = true
+	} else {
+		fmt.Println("Disable sign")
+		enableSig = false
+	}
 }
 
-// @Title Add new contact
-// @Description Add new contact to storage cloud
-// @Param	pubKey		query	string	true	"Public key of user"
-// @Param	sig		query	string	true	"Sig on pubKey"
-// @Param	message		query	string true "Message for private key sign"
-// @Success 200	{string}	string
-// @Failure 403	"Error"
+// @Title Add New Contact
+// @Description Add new contact to database
+// @Param	pubKey		query	string	true	"Public key of a user"
+// @Param	sig		query	string true		"Sign message"
+// @Param	mess		query	string	true	"message to sign"
+// @Success 200	{string} string
+// @Failure 403  Error
 // @router /AddNewContact/ [post]
 func (o *TKContactController) AddNewContact() {
 	fmt.Println("Controller add new contact")
@@ -39,20 +47,20 @@ func (o *TKContactController) AddNewContact() {
 	)
 	o.Ctx.Input.Bind(&pubKey, "pubKey")
 	o.Ctx.Input.Bind(&sig, "sig")
-	o.Ctx.Input.Bind(&pubKey, "message")
+	o.Ctx.Input.Bind(&mess, "mess")
 
 	fmt.Println("pubKey : ", pubKey, "Message  : ", mess, "Sig : ", mess)
 
-	if !util.CheckSignature(pubKey, mess, sig) {
+	if !util.CheckSignature(pubKey, mess, sig) && enableSig {
 		fmt.Println("Error sig message")
 		o.Data["json"] = map[string]string{"result": "Error sig"}
 	} else if tkContactModel != nil {
 		ob := models.TKContact{PubKey: pubKey}
 		ok := tkContactModel.AddContact(ob.PubKey, ob)
-		if ok {
+		if ok == nil {
 			o.Data["json"] = map[string]string{"result": "OK"}
 		} else {
-			o.Data["json"] = map[string]string{"result": "Error"}
+			o.Data["json"] = map[string]string{"result": ok.Error()}
 		}
 	}
 	o.ServeJSON()
@@ -72,10 +80,10 @@ func (o *TKContactController) GetContact() {
 	fmt.Println("Controller get all contact by pubkey ", pubKey)
 	if pubKey != "" && tkContactModel != nil {
 		ok, ob := tkContactModel.GetContact(pubKey)
-		if ok {
+		if ok == nil {
 			o.Data["json"] = ob
 		} else {
-			o.Data["json"] = map[string]string{"result": "Error"}
+			o.Data["json"] = map[string]string{"result": ok.Error()}
 		}
 	}
 	o.ServeJSON()
@@ -106,18 +114,20 @@ func (o *TKContactController) PutContactItem() {
 		o.Data["json"] = map[string]string{"result": "Error"}
 	} else {
 		messByte, _ := json.Marshal(ob)
+		fmt.Println(string(messByte))
+		fmt.Println(ob)
 		mess = string(messByte)
-		fmt.Println("pubKey : ", pubKey, "Message  : ", mess, "Sig : ", mess)
-		if !util.CheckSignature(pubKey, mess, sig) {
+		fmt.Println("pubKey : ", pubKey, "Message  : ", mess, "Sig : ", sig)
+		if !util.CheckSignature(pubKey, mess, sig) && enableSig {
 			fmt.Println("Error sig message")
 			o.Data["json"] = map[string]string{"result": "Error sig"}
 		} else {
 			if tkContactModel != nil {
 				ok := tkContactModel.AddItem(pubKey, ob)
-				if ok {
+				if ok == nil {
 					o.Data["json"] = map[string]string{"result": "OK"}
 				} else {
-					o.Data["json"] = map[string]string{"result": "Error"}
+					o.Data["json"] = map[string]string{"result": ok.Error()}
 				}
 			} else {
 				o.Data["json"] = map[string]string{"result": "Error"}
@@ -149,15 +159,15 @@ func (o *TKContactController) RemoveContactItem() {
 
 	fmt.Println("pubKey : ", pubKey, "Message  : ", pubKeyItem, "Sig : ", sig)
 
-	if !util.CheckSignature(pubKey, pubKeyItem, sig) {
+	if !util.CheckSignature(pubKey, pubKeyItem, sig) && enableSig {
 		fmt.Println("Error sig message")
 		o.Data["json"] = map[string]string{"result": "Error sig"}
 	} else if tkContactModel != nil {
 		ok := tkContactModel.RemoveItem(pubKey, pubKeyItem)
-		if ok {
+		if ok == nil {
 			o.Data["json"] = map[string]string{"result": "OK"}
 		} else {
-			o.Data["json"] = map[string]string{"result": "Error"}
+			o.Data["json"] = map[string]string{"result": ok.Error()}
 		}
 	}
 	o.ServeJSON()
@@ -190,16 +200,16 @@ func (o *TKContactController) EditContactItem() {
 		messByte, _ := json.Marshal(ob)
 		mess = string(messByte)
 		fmt.Println("pubKey : ", pubKey, "Message  : ", mess, "Sig : ", mess)
-		if !util.CheckSignature(pubKey, mess, sig) {
+		if !util.CheckSignature(pubKey, mess, sig) && enableSig {
 			fmt.Println("Error sig message")
 			o.Data["json"] = map[string]string{"result": "Error sig"}
 		} else {
 			if tkContactModel != nil {
 				ok := tkContactModel.EditItem(pubKey, ob)
-				if ok {
+				if ok == nil {
 					o.Data["json"] = map[string]string{"result": "OK"}
 				} else {
-					o.Data["json"] = map[string]string{"result": "Error"}
+					o.Data["json"] = map[string]string{"result": ok.Error()}
 				}
 			} else {
 				o.Data["json"] = map[string]string{"result": "Error"}
@@ -230,13 +240,16 @@ func (o *TKContactController) SynContact() {
 
 	err := json.Unmarshal(o.Ctx.Input.RequestBody, &ob)
 
+	fmt.Println("sync contact pubkey : ", pubKey, "sig : ", sig, " data ", ob.ListPubKey)
+	fmt.Println(ob)
+
 	if err != nil {
 		o.Data["json"] = map[string]string{"result": "Error"}
 	} else {
 		messByte, _ := json.Marshal(ob)
 		mess = string(messByte)
-		fmt.Println("pubKey : ", pubKey, "Message  : ", mess, "Sig : ", mess)
-		if !util.CheckSignature(pubKey, mess, sig) {
+		fmt.Println("pubKey : ", pubKey, "Message  : ", mess, "Sig : ", sig)
+		if !util.CheckSignature(pubKey, mess, sig) && enableSig {
 			fmt.Println("Error sig message")
 			o.Data["json"] = map[string]string{"result": "Error sig"}
 		} else {

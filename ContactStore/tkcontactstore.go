@@ -92,7 +92,7 @@ func TKeyPtr(v TKey) *TKey { return &v }
 //  - ProfilePicture
 //  - CoverPicture
 //  - TimeAdd
-//  - TimeLastConversation
+//  - BirthDay
 type TKContactItem struct {
   PubKeyHex TKey `thrift:"pubKeyHex,1" db:"pubKeyHex" json:"pubKeyHex"`
   DisplayName string `thrift:"displayName,2" db:"displayName" json:"displayName"`
@@ -102,7 +102,7 @@ type TKContactItem struct {
   ProfilePicture string `thrift:"profilePicture,6" db:"profilePicture" json:"profilePicture"`
   CoverPicture string `thrift:"coverPicture,7" db:"coverPicture" json:"coverPicture"`
   TimeAdd string `thrift:"timeAdd,8" db:"timeAdd" json:"timeAdd"`
-  TimeLastConversation string `thrift:"timeLastConversation,9" db:"timeLastConversation" json:"timeLastConversation"`
+  BirthDay string `thrift:"birthDay,9" db:"birthDay" json:"birthDay"`
 }
 
 func NewTKContactItem() *TKContactItem {
@@ -142,8 +142,8 @@ func (p *TKContactItem) GetTimeAdd() string {
   return p.TimeAdd
 }
 
-func (p *TKContactItem) GetTimeLastConversation() string {
-  return p.TimeLastConversation
+func (p *TKContactItem) GetBirthDay() string {
+  return p.BirthDay
 }
 func (p *TKContactItem) Read(iprot thrift.TProtocol) error {
   if _, err := iprot.ReadStructBegin(); err != nil {
@@ -366,7 +366,7 @@ func (p *TKContactItem)  ReadField9(iprot thrift.TProtocol) error {
   if v, err := iprot.ReadString(); err != nil {
   return thrift.PrependError("error reading field 9: ", err)
 } else {
-  p.TimeLastConversation = v
+  p.BirthDay = v
 }
   return nil
 }
@@ -489,12 +489,12 @@ func (p *TKContactItem) writeField8(oprot thrift.TProtocol) (err error) {
 }
 
 func (p *TKContactItem) writeField9(oprot thrift.TProtocol) (err error) {
-  if err := oprot.WriteFieldBegin("timeLastConversation", thrift.STRING, 9); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field begin error 9:timeLastConversation: ", p), err) }
-  if err := oprot.WriteString(string(p.TimeLastConversation)); err != nil {
-  return thrift.PrependError(fmt.Sprintf("%T.timeLastConversation (9) field write error: ", p), err) }
+  if err := oprot.WriteFieldBegin("birthDay", thrift.STRING, 9); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 9:birthDay: ", p), err) }
+  if err := oprot.WriteString(string(p.BirthDay)); err != nil {
+  return thrift.PrependError(fmt.Sprintf("%T.birthDay (9) field write error: ", p), err) }
   if err := oprot.WriteFieldEnd(); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field end error 9:timeLastConversation: ", p), err) }
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 9:birthDay: ", p), err) }
   return err
 }
 
