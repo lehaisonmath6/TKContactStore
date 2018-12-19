@@ -43,14 +43,14 @@ func (o *TKContactModel) GetContact(pubKey string) (err error, contact TKContact
 				return nil, contact
 			}
 			if aRes.ErrorCode == TType.TErrorCode_ENotFound {
-				return errors.New("Pubkey not found !"), TKContact{}
+				return errors.New("200"), TKContact{}
 			}
 			if aRes.ErrorCode == TType.TErrorCode_EUnknown {
-				return errors.New("Error Unknown !"), TKContact{}
+				return errors.New("203"), TKContact{}
 			}
 		}
 	}
-	return errors.New("Backend error !"), TKContact{}
+	return errors.New("202"), TKContact{}
 }
 
 func (o *TKContactModel) AddContact(pubKey string, contact TKContact) error {
@@ -65,11 +65,11 @@ func (o *TKContactModel) AddContact(pubKey string, contact TKContact) error {
 			case TType.TErrorCode_EGood:
 				return nil
 			case TType.TErrorCode_EUnknown:
-				return errors.New("Error Unknown !")
+				return errors.New("203")
 			}
 		}
 	}
-	return errors.New("Backend error !")
+	return errors.New("202")
 }
 
 func (o *TKContactModel) AddItem(pubKey string, item TKContactItem) error {
@@ -84,15 +84,15 @@ func (o *TKContactModel) AddItem(pubKey string, item TKContactItem) error {
 			case TType.TErrorCode_EGood:
 				return nil
 			case TType.TErrorCode_EDataExisted:
-				return errors.New("Error data existed !")
+				return errors.New("201")
 			case TType.TErrorCode_ENotFound:
-				return errors.New("Pubkey not found !")
+				return errors.New("200")
 			case TType.TErrorCode_EUnknown:
-				return errors.New("Error Unknown !")
+				return errors.New("203")
 			}
 		}
 	}
-	return errors.New("Backend error !")
+	return errors.New("202")
 }
 
 func (o *TKContactModel) RemoveItem(pubKey string, itemPubKey string) error {
@@ -104,15 +104,15 @@ func (o *TKContactModel) RemoveItem(pubKey string, itemPubKey string) error {
 		if Err == nil {
 			switch aRes {
 			case TType.TErrorCode_ENotFound:
-				return errors.New("Pubkey not found !")
+				return errors.New("200")
 			case TType.TErrorCode_EGood:
 				return nil
 			case TType.TErrorCode_EUnknown:
-				return errors.New("Error Unknown !")
+				return errors.New("203")
 			}
 		}
 	}
-	return errors.New("Backend error !")
+	return errors.New("202")
 }
 
 func (o *TKContactModel) EditItem(pubKey string, item TKContactItem) error {
@@ -127,13 +127,13 @@ func (o *TKContactModel) EditItem(pubKey string, item TKContactItem) error {
 			case TType.TErrorCode_EGood:
 				return nil
 			case TType.TErrorCode_ENotFound:
-				return errors.New("Pubkey not found !")
+				return errors.New("200")
 			case TType.TErrorCode_EUnknown:
-				return errors.New("Error Unknown !")
+				return errors.New("203")
 			}
 		}
 	}
-	return errors.New("Backend error !")
+	return errors.New("202")
 }
 
 func (o *TKContactModel) GetLastConversation(pubKey string, numCon int32) []TKContactItem {
