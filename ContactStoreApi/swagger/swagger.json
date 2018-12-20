@@ -47,7 +47,10 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "{string} string"
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResult"
+                        }
                     },
                     "403": {
                         "description": "Error"
@@ -114,7 +117,7 @@
                     "200": {
                         "description": "",
                         "schema": {
-                            "$ref": "#/definitions/models.TKContact"
+                            "$ref": "#/definitions/models.TKContactResult"
                         }
                     },
                     "403": {
@@ -193,7 +196,10 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "{string} string"
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResult"
+                        }
                     },
                     "403": {
                         "description": "Error"
@@ -234,10 +240,7 @@
                     "200": {
                         "description": "",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.TKContactItem"
-                            }
+                            "$ref": "#/definitions/models.TKSynContactResult"
                         }
                     },
                     "403": {
@@ -248,6 +251,16 @@
         }
     },
     "definitions": {
+        "models.ErrorResult": {
+            "title": "ErrorResult",
+            "type": "object",
+            "properties": {
+                "errorCode": {
+                    "type": "integer",
+                    "format": "int64"
+                }
+            }
+        },
         "models.Object": {
             "title": "Object",
             "type": "object",
@@ -338,6 +351,19 @@
                 }
             }
         },
+        "models.TKContactResult": {
+            "title": "TKContactResult",
+            "type": "object",
+            "properties": {
+                "Data": {
+                    "$ref": "#/definitions/models.TKContact"
+                },
+                "errorCode": {
+                    "type": "integer",
+                    "format": "int64"
+                }
+            }
+        },
         "models.TKListPubKey": {
             "title": "TKListPubKey",
             "type": "object",
@@ -347,6 +373,22 @@
                     "items": {
                         "type": "string"
                     }
+                }
+            }
+        },
+        "models.TKSynContactResult": {
+            "title": "TKSynContactResult",
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.TKContactItem"
+                    }
+                },
+                "errorCode": {
+                    "type": "integer",
+                    "format": "int64"
                 }
             }
         },
