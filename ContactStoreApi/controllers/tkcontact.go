@@ -299,7 +299,6 @@ func (o *TKContactController) SynContact() {
 					Data:     listTKitem,
 				}
 				o.Data["json"] = rs
-<<<<<<< HEAD
 			} else {
 				rs := models.TKSynContactResult{
 					ErroCode: models.CODE_ServerNull,
@@ -341,13 +340,6 @@ func (o *TKContactController) SafeGetContact() {
 				rs.ErrorCode = models.CODE_Ok
 			} else {
 				rs.ErrorCode, _ = strconv.Atoi(ok.Error())
-=======
-			} else {
-				rs := models.TKSynContactResult{
-					ErroCode: models.CODE_ServerNull,
-				}
-				o.Data["json"] = rs
->>>>>>> ce0153d2f61dae4a4dd8895841ffb6da7e0df603
 			}
 			o.Data["json"] = rs
 		}
