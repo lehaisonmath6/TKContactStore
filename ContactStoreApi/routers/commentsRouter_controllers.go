@@ -81,6 +81,15 @@ func init() {
 
     beego.GlobalControllerRouter["OpenStars/TrustKeys/ContactStoreApi/controllers:TKContactController"] = append(beego.GlobalControllerRouter["OpenStars/TrustKeys/ContactStoreApi/controllers:TKContactController"],
         beego.ControllerComments{
+            Method: "SafeGetContact",
+            Router: `/GetSafeContact/`,
+            AllowHTTPMethods: []string{"get"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["OpenStars/TrustKeys/ContactStoreApi/controllers:TKContactController"] = append(beego.GlobalControllerRouter["OpenStars/TrustKeys/ContactStoreApi/controllers:TKContactController"],
+        beego.ControllerComments{
             Method: "PutContactItem",
             Router: `/PutContactItem/`,
             AllowHTTPMethods: []string{"post"},

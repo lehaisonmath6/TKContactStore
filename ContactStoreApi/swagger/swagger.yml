@@ -36,7 +36,9 @@ paths:
         type: string
       responses:
         "200":
-          description: '{string} string'
+          description: ""
+          schema:
+            $ref: '#/definitions/models.ErrorResult'
         "403":
           description: Error
   /tkcontact/EditContactItem/:
@@ -80,9 +82,35 @@ paths:
         "200":
           description: ""
           schema:
-            $ref: '#/definitions/models.TKContact'
+            $ref: '#/definitions/models.TKContactResult'
         "403":
           description: :pubKey not found
+  /tkcontact/GetSafeContact/:
+    get:
+      tags:
+      - tkcontact
+      description: get contact by pubKey and check signature
+      operationId: TKContactController.Get Safe Contact
+      parameters:
+      - in: query
+        name: pubKey
+        description: "true"
+        type: string
+      - in: query
+        name: timeStamp
+        description: "true"
+        type: string
+      - in: query
+        name: sig
+        description: "true"
+        type: string
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/models.TKContactResult'
+        "403":
+          description: Not found
   /tkcontact/PutContactItem/:
     post:
       tags:
@@ -131,7 +159,9 @@ paths:
         type: string
       responses:
         "200":
-          description: '{string} string'
+          description: ""
+          schema:
+            $ref: '#/definitions/models.ErrorResult'
         "403":
           description: Error
   /tkcontact/SynContact/:
@@ -158,12 +188,17 @@ paths:
         "200":
           description: ""
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/models.TKContactItem'
+            $ref: '#/definitions/models.TKSynContactResult'
         "403":
           description: Not found
 definitions:
+  models.ErrorResult:
+    title: ErrorResult
+    type: object
+    properties:
+      errorCode:
+        type: integer
+        format: int64
   models.Object:
     title: Object
     type: object
@@ -225,6 +260,15 @@ definitions:
         type: string
       timeAdd:
         type: string
+  models.TKContactResult:
+    title: TKContactResult
+    type: object
+    properties:
+      Data:
+        $ref: '#/definitions/models.TKContact'
+      errorCode:
+        type: integer
+        format: int64
   models.TKListPubKey:
     title: TKListPubKey
     type: object
@@ -233,6 +277,17 @@ definitions:
         type: array
         items:
           type: string
+  models.TKSynContactResult:
+    title: TKSynContactResult
+    type: object
+    properties:
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/models.TKContactItem'
+      errorCode:
+        type: integer
+        format: int64
   models.User:
     title: User
     type: object

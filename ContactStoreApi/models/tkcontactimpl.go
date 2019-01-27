@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strconv"
 
 	"github.com/OpenStars/GoEndpointManager"
 	thriftpool "github.com/OpenStars/thriftpool"
@@ -43,14 +44,14 @@ func (o *TKContactModel) GetContact(pubKey string) (err error, contact TKContact
 				return nil, contact
 			}
 			if aRes.ErrorCode == TType.TErrorCode_ENotFound {
-				return errors.New("200"), TKContact{}
+				return errors.New(strconv.Itoa(CODE_KeyNotFound)), TKContact{}
 			}
 			if aRes.ErrorCode == TType.TErrorCode_EUnknown {
-				return errors.New("203"), TKContact{}
+				return errors.New(strconv.Itoa(CODE_UnKnown)), TKContact{}
 			}
 		}
 	}
-	return errors.New("202"), TKContact{}
+	return errors.New(strconv.Itoa(CODE_ServerNull)), TKContact{}
 }
 
 func (o *TKContactModel) AddContact(pubKey string, contact TKContact) error {
@@ -65,11 +66,11 @@ func (o *TKContactModel) AddContact(pubKey string, contact TKContact) error {
 			case TType.TErrorCode_EGood:
 				return nil
 			case TType.TErrorCode_EUnknown:
-				return errors.New("203")
+				return errors.New(strconv.Itoa(CODE_UnKnown))
 			}
 		}
 	}
-	return errors.New("202")
+	return errors.New(strconv.Itoa(CODE_ServerNull))
 }
 
 func (o *TKContactModel) AddItem(pubKey string, item TKContactItem) error {
@@ -84,15 +85,15 @@ func (o *TKContactModel) AddItem(pubKey string, item TKContactItem) error {
 			case TType.TErrorCode_EGood:
 				return nil
 			case TType.TErrorCode_EDataExisted:
-				return errors.New("201")
+				return errors.New(strconv.Itoa(CODE_DataExisted))
 			case TType.TErrorCode_ENotFound:
-				return errors.New("200")
+				return errors.New(strconv.Itoa(CODE_KeyNotFound))
 			case TType.TErrorCode_EUnknown:
-				return errors.New("203")
+				return errors.New(strconv.Itoa(CODE_UnKnown))
 			}
 		}
 	}
-	return errors.New("202")
+	return errors.New("")
 }
 
 func (o *TKContactModel) RemoveItem(pubKey string, itemPubKey string) error {
@@ -104,15 +105,15 @@ func (o *TKContactModel) RemoveItem(pubKey string, itemPubKey string) error {
 		if Err == nil {
 			switch aRes {
 			case TType.TErrorCode_ENotFound:
-				return errors.New("200")
+				return errors.New(strconv.Itoa(CODE_KeyNotFound))
 			case TType.TErrorCode_EGood:
 				return nil
 			case TType.TErrorCode_EUnknown:
-				return errors.New("203")
+				return errors.New(strconv.Itoa(CODE_UnKnown))
 			}
 		}
 	}
-	return errors.New("202")
+	return errors.New(strconv.Itoa(CODE_ServerNull))
 }
 
 func (o *TKContactModel) EditItem(pubKey string, item TKContactItem) error {
@@ -127,13 +128,13 @@ func (o *TKContactModel) EditItem(pubKey string, item TKContactItem) error {
 			case TType.TErrorCode_EGood:
 				return nil
 			case TType.TErrorCode_ENotFound:
-				return errors.New("200")
+				return errors.New(strconv.Itoa(CODE_KeyNotFound))
 			case TType.TErrorCode_EUnknown:
-				return errors.New("203")
+				return errors.New(strconv.Itoa(CODE_UnKnown))
 			}
 		}
 	}
-	return errors.New("202")
+	return errors.New(strconv.Itoa(CODE_ServerNull))
 }
 
 func (o *TKContactModel) GetLastConversation(pubKey string, numCon int32) []TKContactItem {

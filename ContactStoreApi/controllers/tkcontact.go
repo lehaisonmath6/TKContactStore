@@ -4,6 +4,7 @@ import (
 	"OpenStars/TrustKeys/ContactStoreApi/common/util"
 	models "OpenStars/TrustKeys/ContactStoreApi/models"
 	"fmt"
+	"strconv"
 
 	"github.com/astaxie/beego"
 
@@ -35,7 +36,7 @@ func SetContactModel(aModel models.TKContactModelIf, enSig int) {
 // @Param	pubKey		query	string	true	"Public key of a user"
 // @Param	sig		query	string true		"Sign message"
 // @Param	mess		query	string	true	"message to sign"
-// @Success 200	{string} string
+// @Success 200	{object} models.ErrorResult
 // @Failure 403  Error
 // @router /AddNewContact/ [post]
 func (o *TKContactController) AddNewContact() {
@@ -51,16 +52,20 @@ func (o *TKContactController) AddNewContact() {
 
 	fmt.Println("pubKey : ", pubKey, "Message  : ", mess, "Sig : ", mess)
 
+	var codeRs models.ErrorResult
 	if !util.CheckSignature(pubKey, mess, sig) && enableSig {
 		fmt.Println("Error sig message")
-		o.Data["json"] = map[string]string{"result": "204"}
+		codeRs.Result = models.CODE_ErrorSig
+		o.Data["json"] = codeRs
 	} else if tkContactModel != nil {
 		ob := models.TKContact{PubKey: pubKey}
 		ok := tkContactModel.AddContact(ob.PubKey, ob)
 		if ok == nil {
-			o.Data["json"] = map[string]string{"result": "OK"}
+			codeRs.Result = models.CODE_Ok
+			o.Data["json"] = codeRs
 		} else {
-			o.Data["json"] = map[string]string{"result": ok.Error()}
+			codeRs.Result, _ = strconv.Atoi(ok.Error())
+			o.Data["json"] = codeRs
 		}
 	}
 	o.ServeJSON()
@@ -70,7 +75,7 @@ func (o *TKContactController) AddNewContact() {
 // @Title Get all contact
 // @Description find object by objectid
 // @Param	pubKey		query	string	true	"Public key of a user"
-// @Success 200	{object} models.TKContact
+// @Success 200	{object} models.TKContactResult
 // @Failure 403 :pubKey not found
 // @router /GetContact/ [get]
 func (o *TKContactController) GetContact() {
@@ -81,9 +86,18 @@ func (o *TKContactController) GetContact() {
 	if pubKey != "" && tkContactModel != nil {
 		ok, ob := tkContactModel.GetContact(pubKey)
 		if ok == nil {
-			o.Data["json"] = ob
+			rs := models.TKContactResult{
+				ErrorCode: models.CODE_Ok,
+				Data:      ob,
+			}
+			o.Data["json"] = rs
 		} else {
-			o.Data["json"] = map[string]string{"result": ok.Error()}
+			c, _ := strconv.Atoi(ok.Error())
+			rs := models.TKContactResult{
+				ErrorCode: c,
+				Data:      models.TKContact{},
+			}
+			o.Data["json"] = rs
 		}
 	}
 	o.ServeJSON()
@@ -112,8 +126,10 @@ func (o *TKContactController) PutContactItem() {
 	fmt.Println(stringintput)
 	err := json.Unmarshal(o.Ctx.Input.RequestBody, &ob)
 
+	var codeRs models.ErrorResult
 	if err != nil {
-		o.Data["json"] = map[string]string{"result": "205"}
+		codeRs.Result = models.CODE_UnMarshalFailed
+		o.Data["json"] = codeRs
 	} else {
 		messByte, _ := json.Marshal(ob)
 		fmt.Println(messByte)
@@ -121,17 +137,21 @@ func (o *TKContactController) PutContactItem() {
 		fmt.Println("pubKey : ", pubKey, "Message  : ", mess, "Sig : ", sig)
 		if !util.CheckSignature(pubKey, mess, sig) && enableSig {
 			fmt.Println("Error sig message")
-			o.Data["json"] = map[string]string{"result": "204"}
+			codeRs.Result = models.CODE_ErrorSig
+			o.Data["json"] = codeRs
 		} else {
 			if tkContactModel != nil {
 				ok := tkContactModel.AddItem(pubKey, ob)
 				if ok == nil {
-					o.Data["json"] = map[string]string{"result": "OK"}
+					codeRs.Result = models.CODE_Ok
+					o.Data["json"] = codeRs
 				} else {
-					o.Data["json"] = map[string]string{"result": ok.Error()}
+					codeRs.Result, _ = strconv.Atoi(ok.Error())
+					o.Data["json"] = codeRs
 				}
 			} else {
-				o.Data["json"] = map[string]string{"result": "205"}
+				codeRs.Result = models.CODE_ServerNull
+				o.Data["json"] = codeRs
 			}
 		}
 	}
@@ -144,7 +164,7 @@ func (o *TKContactController) PutContactItem() {
 // @Param	pubKey		query	string	true
 // @Param	sig		query	string	true
 // @Param	pubKeyItem	query	string	true
-// @Success 200	{string} string
+// @Success 200	{object} models.ErrorResult
 // @Failure 403 Error
 // @router /RemoveContactItem/ [post]
 func (o *TKContactController) RemoveContactItem() {
@@ -160,15 +180,19 @@ func (o *TKContactController) RemoveContactItem() {
 
 	fmt.Println("pubKey : ", pubKey, "Message  : ", pubKeyItem, "Sig : ", sig)
 
+	var codeRs models.ErrorResult
 	if !util.CheckSignature(pubKey, pubKeyItem, sig) && enableSig {
 		fmt.Println("Error sig message")
-		o.Data["json"] = map[string]string{"result": "204"}
+		codeRs.Result = models.CODE_ErrorSig
+		o.Data["json"] = codeRs
 	} else if tkContactModel != nil {
 		ok := tkContactModel.RemoveItem(pubKey, pubKeyItem)
 		if ok == nil {
-			o.Data["json"] = map[string]string{"result": "OK"}
+			codeRs.Result = models.CODE_Ok
+			o.Data["json"] = codeRs
 		} else {
-			o.Data["json"] = map[string]string{"result": ok.Error()}
+			codeRs.Result, _ = strconv.Atoi(ok.Error())
+			o.Data["json"] = codeRs
 		}
 	}
 	o.ServeJSON()
@@ -195,25 +219,32 @@ func (o *TKContactController) EditContactItem() {
 	o.Ctx.Input.Bind(&sig, "sig")
 	err := json.Unmarshal(o.Ctx.Input.RequestBody, &ob)
 
+	var codeRs models.ErrorResult
+
 	if err != nil {
-		o.Data["json"] = map[string]string{"result": "205"}
+		codeRs.Result = models.CODE_UnMarshalFailed
+		o.Data["json"] = codeRs
 	} else {
 		messByte, _ := json.Marshal(ob)
 		mess = string(messByte)
 		fmt.Println("pubKey : ", pubKey, "Message  : ", mess, "Sig : ", mess)
 		if !util.CheckSignature(pubKey, mess, sig) && enableSig {
 			fmt.Println("Error sig message")
-			o.Data["json"] = map[string]string{"result": "204"}
+			codeRs.Result = models.CODE_ErrorSig
+			o.Data["json"] = codeRs
 		} else {
 			if tkContactModel != nil {
 				ok := tkContactModel.EditItem(pubKey, ob)
 				if ok == nil {
-					o.Data["json"] = map[string]string{"result": "OK"}
+					codeRs.Result = models.CODE_Ok
+					o.Data["json"] = codeRs
 				} else {
-					o.Data["json"] = map[string]string{"result": ok.Error()}
+					codeRs.Result, _ = strconv.Atoi(ok.Error())
+					o.Data["json"] = codeRs
 				}
 			} else {
-				o.Data["json"] = map[string]string{"result": "205"}
+				codeRs.Result = models.CODE_ServerNull
+				o.Data["json"] = codeRs
 			}
 		}
 	}
@@ -226,7 +257,7 @@ func (o *TKContactController) EditContactItem() {
 // @Param	pubKey		query	string	true
 // @Param	sig		query	string	true
 // @Param	body		body	models.TKListPubKey true
-// @Success 200	{object} []models.TKContactItem
+// @Success 200	{object} models.TKSynContactResult
 // @Failure 403 Not found
 // @router /SynContact/ [post]
 func (o *TKContactController) SynContact() {
@@ -236,6 +267,7 @@ func (o *TKContactController) SynContact() {
 		mess   string
 		ob     models.TKListPubKey
 	)
+
 	o.Ctx.Input.Bind(&pubKey, "pubKey")
 	o.Ctx.Input.Bind(&sig, "sig")
 
@@ -245,21 +277,71 @@ func (o *TKContactController) SynContact() {
 	fmt.Println(ob)
 
 	if err != nil {
-		o.Data["json"] = map[string]string{"result": "205"}
+		rs := models.TKSynContactResult{
+			ErroCode: models.CODE_UnMarshalFailed,
+		}
+		o.Data["json"] = rs
 	} else {
 		messByte, _ := json.Marshal(ob)
 		mess = string(messByte)
 		fmt.Println("pubKey : ", pubKey, "Message  : ", mess, "Sig : ", sig)
 		if !util.CheckSignature(pubKey, mess, sig) && enableSig {
 			fmt.Println("Error sig message")
-			o.Data["json"] = map[string]string{"result": "204"}
+			rs := models.TKSynContactResult{
+				ErroCode: models.CODE_ErrorSig,
+			}
+			o.Data["json"] = rs
 		} else {
 			if tkContactModel != nil {
 				listTKitem := tkContactModel.SynContact(pubKey, ob.ListPubKey)
-				o.Data["json"] = listTKitem
+				rs := models.TKSynContactResult{
+					ErroCode: models.CODE_Ok,
+					Data:     listTKitem,
+				}
+				o.Data["json"] = rs
 			} else {
-				o.Data["json"] = map[string]string{"result": "205"}
+				rs := models.TKSynContactResult{
+					ErroCode: models.CODE_ServerNull,
+				}
+				o.Data["json"] = rs
 			}
+		}
+	}
+	o.ServeJSON()
+	fmt.Println("===============END RESPONSE==============")
+}
+
+// @Title Get Safe Contact
+// @Description get contact by pubKey and check signature
+// @Param	pubKey		query	string	true
+// @Param	timeStamp		query	string	true
+// @Param	sig		query	string true
+// @Success 200	{object} models.TKContactResult
+// @Failure 403 Not found
+// @router /GetSafeContact/ [get]
+func (o *TKContactController) SafeGetContact() {
+	var pubKey string
+	var timeStamp string
+	var sig string
+	o.Ctx.Input.Bind(&pubKey, "pubKey")
+	o.Ctx.Input.Bind(&timeStamp, "timeStamp")
+	o.Ctx.Input.Bind(&sig, "sig")
+
+	fmt.Println("Controller safe get all contact by pubkey ", pubKey)
+	var rs models.TKContactResult
+	if pubKey != "" && tkContactModel != nil && timeStamp != "" && sig != "" {
+		if !util.CheckSignature(pubKey, pubKey+timeStamp, sig) && enableSig {
+			rs.ErrorCode = models.CODE_ErrorSig
+			o.Data["json"] = rs
+		} else {
+			ok, ob := tkContactModel.GetContact(pubKey)
+			if ok == nil {
+				rs.Data = ob
+				rs.ErrorCode = models.CODE_Ok
+			} else {
+				rs.ErrorCode, _ = strconv.Atoi(ok.Error())
+			}
+			o.Data["json"] = rs
 		}
 	}
 	o.ServeJSON()
