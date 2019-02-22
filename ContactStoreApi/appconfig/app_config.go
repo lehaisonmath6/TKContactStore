@@ -30,13 +30,14 @@ var (
 	DefaultPassword      string
 	DefaultAdminPassword string
 
-	HTTPProxy     string
-	BIGSETKV_HOST string
-	BIGSETKV_PORT int
-	BIGSETKV_PATH string //Zookeeper path or etcd path
-	ENABLE_SIG    int
-	SID           string
-	ETCDENDPOINT  string
+	HTTPProxy             string
+	BIGSETKV_HOST         string
+	BIGSETKV_PORT         int
+	BIGSETKV_PATH         string //Zookeeper path or etcd path
+	ENABLE_SIG            int
+	SID                   string
+	ETCDENDPOINT          string
+	ENABLE_NOTSAFECONTACT int
 )
 
 func InitConfig() {
@@ -89,5 +90,5 @@ func InitConfig() {
 	ETCDENDPOINT = AppConfig.StringDefault("host_port", "etcdEndpoint", "127.0.0.1:0")
 
 	ENABLE_SIG = AppConfig.IntDefault("host_port", "enable_sig", 0)
-
+	ENABLE_NOTSAFECONTACT = AppConfig.IntDefault("host_port", "enable_notsafecontact", 1)
 }

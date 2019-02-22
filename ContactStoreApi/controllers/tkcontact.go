@@ -12,15 +12,16 @@ import (
 )
 
 var (
-	tkContactModel models.TKContactModelIf
-	enableSig      = true
+	tkContactModel       models.TKContactModelIf
+	enableSig            = true
+	enableNotSafeContact = true
 )
 
 type TKContactController struct {
 	beego.Controller
 }
 
-func SetContactModel(aModel models.TKContactModelIf, enSig int) {
+func SetContactModel(aModel models.TKContactModelIf, enSig int, enGetContact int) {
 	tkContactModel = aModel
 	if enSig > 0 {
 		fmt.Println("Enable sign")
@@ -28,6 +29,13 @@ func SetContactModel(aModel models.TKContactModelIf, enSig int) {
 	} else {
 		fmt.Println("Disable sign")
 		enableSig = false
+	}
+	if enGetContact > 0 {
+		fmt.Println("Not safe contact enable")
+		enableNotSafeContact = true
+	} else {
+		fmt.Println("Not safe contact disable")
+		enableNotSafeContact = false
 	}
 }
 
@@ -79,7 +87,14 @@ func (o *TKContactController) AddNewContact() {
 // @Failure 403 :pubKey not found
 // @router /GetContact/ [get]
 func (o *TKContactController) GetContact() {
-
+	if enableNotSafeContact == false {
+		rs := models.TKContactResult{
+			ErrorCode: models.CODE_ServerNull,
+		}
+		o.Data["json"] = rs
+		o.ServeJSON()
+		return
+	}
 	var pubKey string
 	o.Ctx.Input.Bind(&pubKey, "pubKey")
 	fmt.Println("Controller get all contact by pubkey ", pubKey)
@@ -313,13 +328,13 @@ func (o *TKContactController) SynContact() {
 
 // @Title Get Safe Contact
 // @Description get contact by pubKey and check signature
-// @Param	pubKey		query	string	true
-// @Param	timeStamp		query	string	true
-// @Param	sig		query	string true
+// @Param	pubKey		query	string	true	"Public key of a user"
+// @Param	timeStamp		query	string	true	"pubkey sign on timeStamp"
+// @Param	sig		query	string	true	"Sign of pulickey on timestamp"
 // @Success 200	{object} models.TKContactResult
-// @Failure 403 Not found
+// @Failure 403 :pubKey not found
 // @router /GetSafeContact/ [get]
-func (o *TKContactController) SafeGetContact() {
+func (o *TKContactController) GetSafeContact() {
 	var pubKey string
 	var timeStamp string
 	var sig string
@@ -330,7 +345,7 @@ func (o *TKContactController) SafeGetContact() {
 	fmt.Println("Controller safe get all contact by pubkey ", pubKey)
 	var rs models.TKContactResult
 	if pubKey != "" && tkContactModel != nil && timeStamp != "" && sig != "" {
-		if !util.CheckSignature(pubKey, pubKey+timeStamp, sig) && enableSig {
+		if !util.CheckSignature(pubKey, timeStamp, sig) && enableSig {
 			rs.ErrorCode = models.CODE_ErrorSig
 			o.Data["json"] = rs
 		} else {

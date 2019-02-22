@@ -13,7 +13,7 @@ import (
 )
 
 func InitWithBSHostPort(bsHost, bsPort string) {
-	controllers.SetContactModel(models.NewTKContactModel(bsHost, bsPort, appconfig.SID, appconfig.ETCDENDPOINT), appconfig.ENABLE_SIG)
+	controllers.SetContactModel(models.NewTKContactModel(bsHost, bsPort, appconfig.SID, appconfig.ETCDENDPOINT), appconfig.ENABLE_SIG, appconfig.ENABLE_NOTSAFECONTACT)
 }
 
 func main() {

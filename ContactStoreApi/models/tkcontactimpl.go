@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/OpenStars/GoEndpointManager"
 	thriftpool "github.com/OpenStars/thriftpool"
 )
 
@@ -175,14 +174,12 @@ func (o *TKContactModel) SynContact(pubKey string, listItemPub []string) []TKCon
 
 func NewTKContactModel(host, port string, serviceid string, etcdtEndpoint string) TKContactModelIf {
 
-	endpoint := []string{etcdtEndpoint}
 	return &TKContactModel{
 		DataBSHost: host,
 		DataBSPort: port,
 		ContactStoreConfig: ThriftService{
-			ServiceID:  serviceid,
-			Protocol:   "binary",
-			EndpoinMgr: GoEndpointManager.NewEtcdEndpointManager(endpoint),
+			ServiceID: serviceid,
+			Protocol:  "binary",
 		},
 	}
 }
